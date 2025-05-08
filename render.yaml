@@ -12,7 +12,7 @@ services:
         value: production
       # Gerekirse buraya başka ortam değişkenleri ekleyebilirsiniz (PORT vb.)
 
-  - type: static
+  - type: static_site
     name: frontend
     plan: free
     region: frankfurt
