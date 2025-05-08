@@ -1,16 +1,40 @@
+# Blueprint Spec version
+# (isteğe bağlı, ancak iyi bir pratik olabilir)
+# version: 1
+
 services:
   - type: web
     name: backend
     env: node
-    plan: free # Veya projenizin ihtiyacına göre bir plan seçin
-    region: frankfurt # Size en yakın bölgeyi seçin
+    plan: free
+    region: frankfurt
     buildCommand: "cd server && npm install"
     startCommand: "cd server && npm start"
     healthCheckPath: "/health"
     envVars:
       - key: NODE_ENV
         value: production
-      # Gerekirse buraya başka ortam değişkenleri ekleyebilirsiniz (PORT vb.)
+
+# Statik siteler için ayrı bir bölüm
+staticSites:
+  - name: frontend
+    plan: free
+    region: frankfurt
+    buildCommand: "cd client && npm install && npm run build"
+    staticPublishPath: "./client/build"
+    routes:
+      - type: rewrite
+        source: "/*"
+        destination: "/index.html"
+    # Frontend için build zamanında kullanılacak ortam değişkenleri buraya eklenebilir.
+    # Örneğin, REACT_APP_BACKEND_URL. Ortam değişkenleri Render UI üzerinden
+    # frontend servisine eklenmelidir.
+    # envVars:
+    #   - key: REACT_APP_BACKEND_URL
+    #     fromService:
+    #       type: web
+    #       name: backend
+    #       property: url # Bu şekilde backend URL'sini otomatik alabilir (Render UI'da kontrol et)
 
   - type: static_site
     name: frontend
